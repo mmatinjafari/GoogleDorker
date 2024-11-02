@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Dorker</title>
+    <style>
+        /* General hacker-style theme */
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            animation: blink 1s infinite;
+        }
+
+        input[type="text"] {
+            font-size: 1rem;
+            padding: 8px;
+            background-color: #222;
+            color: #0f0;
+            border: 1px solid #0f0;
+            width: 300px;
+        }
+
+        .results h2 {
+            color: #ff00ff;
+            margin-top: 15px;
+            text-decoration: underline;
+        }
+
+        .results a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1rem;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .results a:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff, 0 0 15px #00ff00;
+        }
+
+        .results {
+            border-top: 1px solid #0f0;
+            padding-top: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Dorker</h1>
+    <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)" oninput="updateSearchQuery()">
+    <div class="results" id="results"></div>
+
+    <script>
+        function updateSearchQuery() {
+            var domain = document.getElementById('domain').value.trim();
+            var dorkCategories = {
+                "Database Exposures": [
+                    'site:' + domain + ' + ext:sql | ext:db | ext:dbf | ext:mdb',
+                    'site:' + domain + ' + "phpMyAdmin" | "MySQL Dump" | "dump.sql"'
+                ],
+                "Config Files": [
+                    'site:' + domain + ' + ext:env | ext:yaml | ext:xml | ext:json',
+                    'site:' + domain + ' + inurl:wp-config | inurl:config'
+                ],
+                "Email & Password Leaks": [
+                    'site:' + domain + ' + intext:@gmail.com | intext:@yahoo.com',
+                    'site:' + domain + ' + "password" | "passwd" | "credentials"'
+                ],
+                "Debugging Files": [
+                    'site:' + domain + ' + ext:bak | ext:old | ext:swp | ext:tmp | ext:log',
+                    'site:' + domain + ' + "debug" | "error" | "stack trace"'
+                ],
+                "Admin Panels": [
+                    'site:' + domain + ' + inurl:admin | inurl:administrator | inurl:panel | inurl:dashboard',
+                    'site:' + domain + ' + intitle:"admin panel" | intitle:"control panel"'
+                ],
+                "Cloud Storage": [
+                    'site:s3.amazonaws.com "' + domain + '"',
+                    'site:' + domain + ' inurl:storage.googleapis.com | inurl:blob.core.windows.net'
+                ],
+                "Vulnerabilities": [
+                    'site:' + domain + ' + "Fatal error" | "Warning:" | "Notice:"',
+                    'site:' + domain + ' + intitle:"index of" | intitle:"directory listing"'
+                ]
+            };
+
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "";
+
+            Object.keys(dorkCategories).forEach(category => {
+                var categoryHeader = document.createElement('h2');
+                categoryHeader.textContent = category;
+                resultsDiv.appendChild(categoryHeader);
+
+                dorkCategories[category].forEach(dork => {
+                    var link = 'https://www.google.com/search?q=' + encodeURIComponent(dork);
+                    var linkElement = document.createElement('a');
+                    linkElement.href = link;
+                    linkElement.target = '_blank';
+                    linkElement.textContent = dork;
+                    resultsDiv.appendChild(linkElement);
+                    resultsDiv.appendChild(document.createElement('br'));
+                });
+            });
+        }
+
+        // Initialize with a sample domain for demo
+        updateSearchQuery();
+    </script>
+</body>
+</html>

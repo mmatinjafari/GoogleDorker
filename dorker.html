@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Dorker</title>
+    <style>
+        /* Hacker theme */
+        body {
+            background-color: #0d0d0d;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+            margin: 20px 0;
+        }
+
+        /* Styled input box */
+        .domain {
+            background-color: #111;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 10px #00ff00;
+            margin-bottom: 20px;
+        }
+
+        /* Results styling */
+        .results a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1rem;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        /* Glitch effect on hover */
+        .results a:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff, 0 0 15px #00ff00;
+        }
+
+        .results {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid #00ff00;
+            padding-top: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Scrollbar style */
+        .results::-webkit-scrollbar {
+            width: 8px;
+        }
+        .results::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 10px;
+        }
+        .results::-webkit-scrollbar-track {
+            background: #111;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Dorker</h1>
+    <input class="domain" id="domain" oninput="updateSearchQuery()" size="50" placeholder="Enter domain"><br><br>
+    <div class="results" id="results"></div>
+    <script>
+        function updateSearchQuery() {
+            var domain = document.getElementById('domain').value.trim();
+            var dorks = [
+                'site:' + domain + ' + inurl:6',
+                'site:' + domain + ' + ext:php | ext:sql | ext:jsp | ext:html | ext:htm',
+                'site:' + domain + ' + ext:log | ext:ini | ext:cnf | ext:conf | ext:bak | ext:backup | ext:swp | ext:old | ext:~ | ext:git | ext:svn | ext:htpasswd | ext:htaccess | ext:xml',
+                'site:' + domain + ' + inurl:redirect | inurl:return | inurl:next | inurl:dest | inurl:data | inurl:domain= | inurl:page= inurl:&',
+                'site:' + domain + ' + inurl:config | inurl:setting | inurl:backup | inurl:admin | inurl:php',
+                'site:' + domain + ' + inurl:email | inurl:password | inurl:secret | inurl:key | inurl:6',
+                'site:' + domain + ' + inurl:apidocs | inurl:api-docs | inurl:swagger | inurl:api-explorer',
+                'site:' + domain + ' + inurl:query | inurl:code | inurl:do | inurl:run= | inurl:read= | inurl:ping= inurl:&',
+                'site:' + domain + ' + inurl:subscribe|register|feedback|signup|join|contact|profile|user|comment|api|developer|affiliate|upload|mobile|upgrade|password',
+                'site:' + domain + ' + intitle:Welcome to Nginx'
+            ];
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "";
+            dorks.forEach(function (dork) {
+                var link = 'https://www.google.com/search?q=' + encodeURIComponent(dork);
+                var linkElement = document.createElement('a');
+                linkElement.href = link;
+                linkElement.target = '_blank';
+                linkElement.textContent = dork;
+                resultsDiv.appendChild(linkElement);
+                resultsDiv.appendChild(document.createElement('br'));
+            });
+        }
+        updateSearchQuery();
+    </script>
+</body>
+</html>
