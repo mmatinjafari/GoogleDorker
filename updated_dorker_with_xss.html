@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Dorker</title>
+    <style>
+        /* General hacker-style theme */
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            animation: blink 1s infinite;
+        }
+
+        input[type="text"] {
+            font-size: 1rem;
+            padding: 8px;
+            background-color: #222;
+            color: #0f0;
+            border: 1px solid #0f0;
+            width: 300px;
+        }
+
+        .results h2 {
+            color: #ff00ff;
+            margin-top: 15px;
+            text-decoration: underline;
+        }
+
+        .results p {
+            font-size: 0.9rem;
+            color: #0f0;
+            margin-bottom: 5px;
+        }
+
+        .results a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1rem;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .results a:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff, 0 0 15px #00ff00;
+        }
+
+        .results {
+            border-top: 1px solid #0f0;
+            padding-top: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Dorker</h1>
+    <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)" oninput="updateSearchQuery()">
+    <div class="results" id="results"></div>
+
+    <script>
+        function updateSearchQuery() {
+            var domain = document.getElementById('domain').value.trim();
+            var dorkCategories = {
+                "Database Exposures": {
+                    description: "Find exposed databases containing sensitive information such as SQL dumps or database files.",
+                    dorks: [
+                        'site:' + domain + ' + ext:sql | ext:db | ext:dbf | ext:mdb',
+                        'site:' + domain + ' + "phpMyAdmin" | "MySQL Dump" | "dump.sql"'
+                    ]
+                },
+                "Config Files": {
+                    description: "Locate exposed configuration files revealing sensitive data like API keys or server configs.",
+                    dorks: [
+                        'site:' + domain + ' + ext:env | ext:yaml | ext:xml | ext:json',
+                        'site:' + domain + ' + inurl:wp-config | inurl:config'
+                    ]
+                },
+                "Email & Password Leaks": {
+                    description: "Search for email addresses and potential password leaks related to the domain.",
+                    dorks: [
+                        'site:' + domain + ' + intext:@gmail.com | intext:@yahoo.com',
+                        'site:' + domain + ' + "password" | "passwd" | "credentials"'
+                    ]
+                },
+                "Debugging Files": {
+                    description: "Find leftover debug or log files that could disclose server structure or vulnerabilities.",
+                    dorks: [
+                        'site:' + domain + ' + ext:bak | ext:old | ext:swp | ext:tmp | ext:log',
+                        'site:' + domain + ' + "debug" | "error" | "stack trace"'
+                    ]
+                },
+                "Admin Panels": {
+                    description: "Locate administrative panels or control dashboards that might be publicly accessible.",
+                    dorks: [
+                        'site:' + domain + ' + inurl:admin | inurl:administrator | inurl:panel | inurl:dashboard',
+                        'site:' + domain + ' + intitle:"admin panel" | intitle:"control panel"'
+                    ]
+                },
+                "Cloud Storage": {
+                    description: "Identify exposed cloud storage buckets or files on platforms like AWS S3 or Google Cloud.",
+                    dorks: [
+                        'site:s3.amazonaws.com "' + domain + '"',
+                        'site:' + domain + ' inurl:storage.googleapis.com | inurl:blob.core.windows.net'
+                    ]
+                },
+                "Vulnerabilities": {
+                    description: "Search for error messages, warnings, or directory listings indicating vulnerabilities.",
+                    dorks: [
+                        'site:' + domain + ' + "Fatal error" | "Warning:" | "Notice:"',
+                        'site:' + domain + ' + intitle:"index of" | intitle:"directory listing"'
+                    ]
+                },
+                "XSS (Cross-Site Scripting)": {
+                    description: "Search for pages vulnerable to XSS attacks.",
+                    dorks: [
+                        // Old-school XSS dorks
+                        'site:' + domain + ' inurl:search | inurl:query | inurl:redirect',
+                        'site:' + domain + ' inurl:view.php?id=',
+                        // New-school XSS dorks
+                        'site:' + domain + ' inurl:api | inurl:json | inurl:callback=',
+                        'site:' + domain + ' inurl:ajax | intext:"<script>"',
+                        // General-purpose XSS dorks
+                        'site:' + domain + ' "XSS" | "alert()" | "script>alert"',
+                        'site:' + domain + ' intext:"Cross Site Scripting" | inurl:"javascript:"'
+                    ]
+                }
+            };
+
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "";
+
+            Object.keys(dorkCategories).forEach(category => {
+                var categoryHeader = document.createElement('h2');
+                categoryHeader.textContent = category;
+                resultsDiv.appendChild(categoryHeader);
+
+                var categoryDescription = document.createElement('p');
+                categoryDescription.textContent = dorkCategories[category].description;
+                resultsDiv.appendChild(categoryDescription);
+
+                dorkCategories[category].dorks.forEach(dork => {
+                    var link = 'https://www.google.com/search?q=' + encodeURIComponent(dork);
+                    var linkElement = document.createElement('a');
+                    linkElement.href = link;
+                    linkElement.target = '_blank';
+                    linkElement.textContent = dork;
+                    resultsDiv.appendChild(linkElement);
+                    resultsDiv.appendChild(document.createElement('br'));
+                });
+            });
+        }
+
+        // Initialize with a sample domain for demo
+        updateSearchQuery();
+    </script>
+</body>
+</html>
